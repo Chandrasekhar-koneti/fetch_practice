@@ -6,24 +6,17 @@ import './App.css';
 function App() {
   const[movies,setmovies]=useState([])
   const[isLoading,setisLoading]=useState(false)
-  // const dummyMovies = [
-  //   {
-  //     id: 1,
-  //     title: 'Some Dummy Movie',
-  //     openingText: 'This is the opening text of the movie',
-  //     releaseDate: '2021-05-18',
-  //   },
-  //   {
-  //     id: 2,
-  //     title: 'Some Dummy Movie 2',
-  //     openingText: 'This is the second opening text of the movie',
-  //     releaseDate: '2021-05-19',
-  //   },
-  // ];
+  const[error,seterror]=useState(null)
+
 
   async function fetchmovieshandler(){
     setisLoading(true)
-    const response=await fetch('https://swapi.dev/api/films/')
+    seterror(null)
+    try{
+      const response=await fetch('https://swapi.dev/api/fims/')
+      if(!response.ok){
+        throw new Error('something went wrong...retrying')
+      }
     const data=await response.json()
     const transformedmovies=data.results.map(moviedata=>{
       return {
@@ -34,8 +27,23 @@ function App() {
       }
     })
     setmovies(transformedmovies)
+    }
+    catch(error){
+      seterror(error.message)
+    }
     setisLoading(false)
- 
+
+  }
+
+  let content=<p>No Movies Found</p>
+  if(movies.length>0){
+    content=<MoviesList movies={movies} />
+  }
+  if(error){
+    content=<p>{error}</p>
+  }
+  if(isLoading){
+    content=<p>Loading....</p>
   }
 
   return (
@@ -44,9 +52,11 @@ function App() {
         <button onClick={fetchmovieshandler}>Fetch Movies</button>
       </section>
       <section>
-        {!isLoading && movies.length>0 && <MoviesList movies={movies} />}
-        {!isLoading && movies.length===0 && <p>No Movies Found</p>}
-        {isLoading && <p>Loading.....</p>}
+        {content}
+        {/* {!isLoading && movies.length>0 && <MoviesList movies={movies} />}
+        {!isLoading && movies.length===0 && !error && <p>No Movies Found</p>}
+        {!isLoading && error && <p>{error}</p>}
+        {isLoading && <p>Loading.....</p>} */}
       </section>
     </React.Fragment>
   );
