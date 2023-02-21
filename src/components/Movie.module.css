@@ -18,3 +18,7 @@
   margin: 0;
   font-size: 1rem;
 }
+
+.movie button{
+  background-color: rgb(97, 110, 110);
+}

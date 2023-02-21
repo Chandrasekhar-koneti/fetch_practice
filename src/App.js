@@ -13,20 +13,34 @@ function App() {
     setisLoading(true)
     seterror(null)
     try{
-      const response=await fetch('https://swapi.dev/api/films/')
+      const response=await fetch('https://react-http-practice-10e53-default-rtdb.firebaseio.com/movies.json')
       if(!response.ok){
         throw new Error('something went wrong...retrying')
       }
     const data=await response.json()
-    const transformedmovies=data.results.map(moviedata=>{
-      return {
-        id:moviedata.title,
-        title:moviedata.title,
-        openeningtext:moviedata.opening_crawl,
-        releasedate:moviedata.release_date
-      }
-    })
-    setmovies(transformedmovies)
+    // console.log(data)
+
+    const loadmovies=[]
+
+    for(const key in data){
+      loadmovies.push({
+        id:key,
+        title:data[key].title,
+        openingText:data[key].openeningText,
+        releaseDate:data[key].releaseDate,
+      })
+    }
+
+    // const transformedmovies=data.results.map(moviedata=>{
+    //   return {
+    //     id:moviedata.title,
+    //     title:moviedata.title,
+    //     openeningtext:moviedata.opening_crawl,
+    //     releasedate:moviedata.release_date
+    //   }
+    // })
+    // setmovies(transformedmovies)
+    setmovies(loadmovies)
     }
     catch(error){
       seterror(error.message)
@@ -35,8 +49,28 @@ function App() {
 
   },[])
 
-  function addMovieHandler(movie) {
-    console.log(movie);
+  async function addMovieHandler(movie) {
+    seterror(null)
+    // try{
+      const response=await fetch('https://react-http-practice-10e53-default-rtdb.firebaseio.com/movies.json',{
+        method:'POST',
+        body:JSON.stringify(movie),
+        headers:{
+          'Content-Type':'application/json'
+        }
+      })
+      const data=await response.json()
+      console.log(data)
+
+    
+    //   if(!response.ok){
+    //     throw new Error('something went wrong...retrying')
+    //   }
+    // }
+    // catch(error){
+    //   seterror(error.message)
+    // }
+   
   }
 
 
@@ -54,6 +88,8 @@ function App() {
   if(isLoading){
     content=<p>Loading....</p>
   }
+
+
 
   return (
     <React.Fragment>
